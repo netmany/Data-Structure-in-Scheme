@@ -12,14 +12,17 @@
 ; stack 是 list的一种约定访问接口
 ; ================================================================================================
 (define stack list)
+
 (define-syntax stk-push
   (syntax-rules ()
     ((_ s e) (set! s (cons e s)))))
+    
 (define-syntax stk-pop
   (syntax-rules ()
     ((_ s) 
      (let ((e (car s)))
        (set! s (cdr s)) e))))
+       
 (define stk-empty? null?)
 (define (stk-top s) (car s))
 (define stk-size length)
