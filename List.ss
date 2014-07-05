@@ -1,3 +1,4 @@
+
 ; List, 链表
 ;=================================================================================
 
@@ -13,8 +14,9 @@
 (list-empty? l)                                        ; #f
 (list-contain l 7)                                     ; (7 10)         
 (list? l)                                              ; #t
-(set! l (list-sort l))                                 ; (2 3 7 10 11 13)，归并排序
+(set! l (list-sort l))                                 ; (2 3 7 10 11 13)，MergeSort list, 归并排序
 (list-traverse l (lambda (i) (printf "i = ~d\n" i)))   ; 顺序遍历链表
+
 
 ; =================================================================================
 
@@ -90,6 +92,7 @@
             (t (cdr ls))))))
 
 (define (list-sort l)
+
   (define (merge a b)
     (if (null? a)
         b
@@ -98,6 +101,7 @@
             (if (< (car a) (car b))
                 (cons (car a) (merge (cdr a) b))
                 (cons (car b) (merge a (cdr b)))))))
+                
   (define (half l)
     (if (or (null? l)
             (null? (cdr l)))
@@ -107,6 +111,7 @@
                   (null? (cdr p)))
               (begin (set-cdr! s '()) q)         
               (t (cdr (cdr p)) (cdr q) q)))))
+              
   (if (or (null? l)
           (null? (cdr l)))
       l
