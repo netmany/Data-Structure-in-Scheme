@@ -12,14 +12,17 @@
 ; ======================================================================================
 
 (define queue list)
+
 (define-syntax queue-in
   (syntax-rules ()
     ((_ q e) (set! q (append q (list e))))))
+    
 (define-syntax queue-out
   (syntax-rules ()
     ((_ q)
      (let ((e (car q)))
        (set! q (cdr q)) e))))
+       
 (define queue-empty? null?)
 (define queue-size length)
 (define queue-head car)
@@ -40,17 +43,21 @@
 
 ; =============================================================================================
 (define deque list)
+
 (define-syntax deque-in-left
   (syntax-rules ()
     ((_ q e) (set! q (cons e q)))))
+    
 (define-syntax deque-in-right
   (syntax-rules ()
     ((_ q e) (set! q (append q (list e))))))
+    
 (define-syntax deque-out-left
   (syntax-rules ()
     ((_ q)
      (let ((e (car q)))
        (set! q (cdr q)) e))))
+       
 (define-syntax deque-out-right
   (syntax-rules ()
     ((_ q)
@@ -60,6 +67,7 @@
            (set-cdr! (list-tail q (- len 2)) '())
            (set! q '()))
        e))))
+       
 (define deque-empty? null?)
 (define deque-size length)
 (define deque-head car)
