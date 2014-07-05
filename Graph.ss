@@ -25,6 +25,7 @@
 
 (define graph list)
 (define (graph-vertex g) (map car g))
+
 (define (graph-edges g v)
   (if (null? g)
       '()
@@ -76,10 +77,12 @@
         g))
 
 (define (graph-traverse g f)
+
   (define (graph-node g i)
     (if (= i (car (car g)))
         (car g)
         (graph-node (cdr g) i)))
+        
   (define (dfs p)
     (set-car! (cdr p) #t)
     (f (car p))
@@ -88,6 +91,7 @@
               (if (not (car (cdr q)))
                   (dfs q)))) 
           (cdr (cdr p))))
+          
   (zmap (lambda (p) (set-cdr! p (cons #f (cdr p)))) g)
   (zmap (lambda (p)
           (if (not (car (cdr p)))
@@ -96,11 +100,14 @@
   (zmap (lambda (p) (set-cdr! p (cdr (cdr p)))) g))    
 
 (define (graph-connected? g v1 v2)
+
   (define res #f)
+  
   (define (graph-node g i)
     (if (= i (car (car g)))
         (car g)
         (graph-node (cdr g) i)))
+        
   (define (dfs p)
     (set-car! (cdr p) #t)
     (if (= v2 (car p))
