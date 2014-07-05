@@ -17,7 +17,7 @@
 
 (bstree-traverse bst (lambda (i) (printf "i = ~d\n" i)))            
                                       ; 中序遍历每个节点，使用func处理
-(bstree-find bst 9)                   ; '('(9) (5 '() '(9)) 'left), 查找bst中是含有节点e的子树
+(bstree-find bst 9)                   ; '('(9) '(5 '() '(9)) 'right), 查找bst中是含有节点e的子树
 
 (bstree->list bst)                    ; '(5 9 10 17) 输出bst的有序链表
 (list->bstree '(10 5 17 13 9))        ; '(10 '(5 '() '(9)) '(17 '(13) '())), 从链表构建bst
