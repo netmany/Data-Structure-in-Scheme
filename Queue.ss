@@ -1,10 +1,15 @@
+
 ; Queue, 队列，先进先出(FIFO)
+; ======================================================================================
+
 (define q (queue 1 3 "name" #t))   ; q = (1 3 "name" #t)
 (queue-in q 100)                   ; q = (1 3 "name" #t 100)
 (queue-out q)                      ; 1, q = (3 "name" #t 100)
 (queue-empty? q)                   ; #f
 (queue-size q)                     ; 4
 (queue-head q)                     ; 3
+
+; ======================================================================================
 
 (define queue list)
 (define-syntax queue-in
@@ -19,8 +24,10 @@
 (define queue-size length)
 (define queue-head car)
 
-; ============================================================================================
+
 ; Deque, 双端队列，两端皆可出入
+; ============================================================================================
+
 (define dq (deque 1 3 "price"))      ; dq = (1 3 "price")
 (deque-in-left dq 10)                ; dq = (10 1 3 "price")
 (deque-in-right dq 32)               ; dq = (10 1 3 "price" 32)
@@ -31,6 +38,7 @@
 (deque-head dq)                      ; 1
 (deque-tail dq)                      ; "price"
 
+; =============================================================================================
 (define deque list)
 (define-syntax deque-in-left
   (syntax-rules ()
