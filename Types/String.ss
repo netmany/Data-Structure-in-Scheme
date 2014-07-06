@@ -52,30 +52,28 @@
                         (substring str s (+ 1 e))))))))))
 
 (define (string-split str chr)
-
+  
+  (define len (string-length str))
+  
   (define (delim? i)
     (char=? chr (string-ref str i)))
-    
-  (let ((len (string-length str)))
-    (if (= 0 len)
-        (list "")
-        (let t ((b 0))
-          (if (and (< b len) (delim? b))
-              (t (+ 1 b))
-              (if (= b len)
-                  (list "")
-                  (let s ((e (+ 1 b)))
-                    (if (and (< e len) (not (delim? e)))
-                        (s (+ 1 e))
-                        (if (= e len)
-                            (list (substring str b e))
-                            (let k ((n (+ 1 e)))
-                              (if (and (< n len) (delim? n))
-                                  (k (+ 1 n))
-                                  (if (= n len)
-                                      (list (substring str b e))
-                                      (cons (substring str b e) (t n))))))))))))))
-
+  
+  (define (get-start i)
+    (if (and (< i len) (delim? i))
+        (get-start (+ 1 i))
+        i))
+  
+  (define (get-end j)
+    (if (and (< j len) (not (delim? j)))
+        (get-end (+ 1 j))
+        j))
+  
+  (let t ((i 0))
+    (let* ((b (get-start i)) (e (get-end b)))
+      (if (= b e)
+          '()
+          (cons (substring str b e) (t e))))))
+ 
 (define string-find
   (case-lambda
     ((str sub)
