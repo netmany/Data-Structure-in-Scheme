@@ -73,7 +73,7 @@
       (if (= b e)
           '()
           (cons (substring str b e) (t e))))))
- 
+
 (define string-find
   (case-lambda
     ((str sub)
@@ -83,27 +83,25 @@
      (define (match? i start)
        (char=? (string-ref sub i) (string-ref str (+ i start))))
      
-     (define (next sub len)
-       (if (= 0 len)
-           1
-           (let t ((p 0) (offset 1))
-             (if (and (< (+ p offset) len)
-                      (char=? (string-ref sub p) (string-ref sub (+ p offset))))
-                 (t (+ 1 p) offset)
-                 (if (= (+ p offset) len)
-                     offset
-                     (t 0 (+ 1 offset)))))))
+     (define (next len start)
+       (let t ((p 0) (offset start))
+         (if (and (< (+ p offset) len)
+                  (char=? (string-ref sub p) (string-ref sub (+ p offset))))
+             (t (+ 1 p) offset)
+             (if (= (+ p offset) len)
+                 offset
+                 (t 0 (+ 1 offset))))))
      
      (let ((len (string-length str))
-            (sl (string-length sub)))
-       (if (= 0 sl)
+           (sl (string-length sub)))
+       (if (or (= 0 sl) (= 0 len))
            -1
            (let ((mv (make-vector sl)))
-             (let while ((i 0))
+             (let while ((i 0) (k 1))
                (if (< i sl)
                    (begin 
-                     (vector-set! mv i (next sub i)) 
-                     (while (+ 1 i)))))
+                     (vector-set! mv i k) 
+                     (while (+ 1 i) (next (+ 1 i) k)))))
              (let s ((p n))
                (if (> (+ p sl) len)
                    -1
@@ -112,8 +110,8 @@
                          (t (+ 1 q))
                          (if (= q sl)
                              p
-                             (s (+ p (vector-ref mv q)))))))))))))))
-       
+                             (s (+ p (vector-ref mv q))))))))))))))
+                             
 (define (string-replace str sub1 sub2)
   (let ((p (string-find str sub1)))
     (if (>= p 0)
