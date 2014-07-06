@@ -74,43 +74,50 @@
           '()
           (cons (substring str b e) (t e))))))
 
-(define string-find
+
+(define string-find                                  ; KMP substring search
   (case-lambda
     ((str sub)
      (string-find str sub 0))
     ((str sub n)
+     (define len (string-length str))
+     (define sl (string-length sub))
      
      (define (match? i start)
        (char=? (string-ref sub i) (string-ref str (+ i start))))
      
-     (define (next len start)
+     (define (next l start)
        (let t ((p 0) (offset start))
-         (if (and (< (+ p offset) len)
+         (if (and (< (+ p offset) l)
                   (char=? (string-ref sub p) (string-ref sub (+ p offset))))
              (t (+ 1 p) offset)
-             (if (= (+ p offset) len)
+             (if (= (+ p offset) l)
                  offset
                  (t 0 (+ 1 offset))))))
      
-     (let ((len (string-length str))
-           (sl (string-length sub)))
-       (if (or (= 0 sl) (= 0 len))
-           -1
-           (let ((mv (make-vector sl)))
-             (let while ((i 0) (k 1))
-               (if (< i sl)
-                   (begin 
-                     (vector-set! mv i k) 
-                     (while (+ 1 i) (next (+ 1 i) k)))))
-             (let s ((p n))
-               (if (> (+ p sl) len)
-                   -1
-                   (let t ((q 0))
-                     (if (and (< q sl) (match? q p))
-                         (t (+ 1 q))
-                         (if (= q sl)
-                             p
-                             (s (+ p (vector-ref mv q))))))))))))))
+     (define (get-mv)
+       (define v (make-vector sl))
+       (let while ((i 0) (k 1))
+         (if (< i sl)
+             (begin 
+               (vector-set! v i k) 
+               (while (+ 1 i) (next (+ 1 i) k)))))
+       v)
+     
+     (if (or (= 0 sl) (= 0 len))
+         -1
+         (let ((mv (get-mv)))
+           (let t ((p n) (q 0))
+             (if (> (+ p sl) len)
+                 -1
+                 (let while ()
+                   (if (and (< q sl) (match? q p))
+                       (begin (set! q (+ 1 q)) (while))
+                       (if (= q sl)
+                           p
+                           (t (+ p (vector-ref mv q)) 
+                              (if (zero? q) 0 (- q (vector-ref mv q))))))))))))))
+
                              
 (define (string-replace str sub1 sub2)
   (let ((p (string-find str sub1)))
