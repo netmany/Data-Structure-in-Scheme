@@ -1,6 +1,6 @@
 ; N-Queen layout
 ; =============================================================
-(define (queen n)
+(define (Queens n)
   (let ((count 0) (layout (make-vector n)))
     (define (valid? col row)
       (let p ((i 0) (res #t))
@@ -26,7 +26,7 @@
     (printf "total = ~a\n" count)))
 
 ; ==========================================================
-> (queen 8)
+> (Queens 8)
 1:      #(0 4 7 5 2 6 1 3)
 2:      #(0 5 7 2 6 3 1 4)
 ....
