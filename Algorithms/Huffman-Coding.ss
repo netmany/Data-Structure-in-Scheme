@@ -1,3 +1,49 @@
+; Greedy-Algorithm, Huffman-Coding
+; 哈夫曼编码
+; =================================================================================
+> (huff-code (vector 10 5 8))
+10 => 0
+5 => 10
+8 => 11
+> (huff-code (vector 1 1 1 1))
+1 => 00
+1 => 01
+1 => 10
+1 => 11
+> (huff-code (vector 0.45 0.13 0.12 0.16 0.09 0.05))
+0.45 => 0
+0.12 => 100
+0.13 => 101
+0.05 => 1100
+0.09 => 1101
+0.16 => 111
+
+; ========================================================================================
+(define (huff-code v)
+  (define (heap-vector v less?)
+    (define len (vector-length v))
+    (define h (heap len less?))
+    (let t ((i 0))
+      (if (< i len)
+          (begin
+            (heap-in h (list (vector-ref v i)))
+            (t (+ i 1)))))
+    h)
+  
+  (let ((h (heap-vector v (lambda (p q) (< (car p) (car q))))))
+    (let t ()
+      (if (> (heap-size h) 1)
+          (let ((p (heap-out h))
+                (q (heap-out h)))
+            (heap-in h (list (+ (car p) (car q)) p q))
+            (t))))
+    (let t ((prefix "") (z (heap-out h)))
+      (if (null? (cdr z))
+          (printf "~a => ~a\n" (car z) prefix)
+          (begin
+            (t (string-append prefix "0") (cadr z))
+            (t (string-append prefix "1") (caddr z)))))))
+
 ; heap, priority-queue
 ; =================================================================
 (define (heap len less?) (list (make-vector (+ 1 len)) less?))
@@ -56,54 +102,3 @@
                   (begin
                     (vector-set! hq i (vector-ref hq l))
                     (vector-set! hq l vi))))))))
-
-; Greedy-Algorithm, Huffman-Coding
-; 哈夫曼编码
-; =========================================================
-; input = [0.45, 0.13, 0.12, 0.16, 0.09, 0.05]
-; output= [0, 101, 100, 111, 1101, 1100]
-
-; ========================================================================================
-
-(define (huff-code v)
-  (define (heap-vector v less?)
-    (define len (vector-length v))
-    (define h (heap len less?))
-    (let t ((i 0))
-      (if (< i len)
-          (begin
-            (heap-in h (list (vector-ref v i)))
-            (t (+ i 1)))))
-    h)
-  
-  (let ((h (heap-vector v (lambda (p q) (< (car p) (car q))))))
-    (let t ()
-      (if (> (heap-size h) 1)
-          (let ((p (heap-out h))
-                (q (heap-out h)))
-            (heap-in h (list (+ (car p) (car q)) p q))
-            (t))))
-    (let t ((prefix "") (z (heap-out h)))
-      (if (null? (cdr z))
-          (printf "~a => ~a\n" (car z) prefix)
-          (begin
-            (t (string-append prefix "0") (cadr z))
-            (t (string-append prefix "1") (caddr z)))))))
-
-; =================================================================================
-> (huff-code (vector 10 5 8))
-10 => 0
-5 => 10
-8 => 11
-> (huff-code (vector 1 1 1 1))
-1 => 00
-1 => 01
-1 => 10
-1 => 11
-> (huff-code (vector 0.45 0.13 0.12 0.16 0.09 0.05))
-0.45 => 0
-0.12 => 100
-0.13 => 101
-0.05 => 1100
-0.09 => 1101
-0.16 => 111
