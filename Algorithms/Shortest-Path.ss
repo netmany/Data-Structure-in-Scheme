@@ -47,6 +47,23 @@
                         (t (cdr q))))))
             (search (heap-out h)))))))
 
+; initialize a graph
+; ===============================================================
+(define (make-graph n conf)
+  (let ((G (make-vector n)))
+    (let t ((i 0))
+      (if (< i n)
+          (begin
+            (vector-set! G i (make-vector n +inf.0))
+            (t (+ i 1)))))
+    (let t ((p conf))
+      (if (not (null? p))
+          (begin
+            (let ((q (car p)))
+              (vector-set! (vector-ref G (car q)) (cadr q) (caddr q)))
+            (t (cdr p)))))
+    G))
+
 ; priority-queue
 ; ====================================================================
 (define (heap len less?) (list (make-vector (+ 1 len)) less?))
@@ -105,20 +122,3 @@
                   (begin
                     (vector-set! hq i (vector-ref hq l))
                     (vector-set! hq l vi))))))))
-
-; initialize a graph
-; ===============================================================
-(define (make-graph n conf)
-  (let ((G (make-vector n)))
-    (let t ((i 0))
-      (if (< i n)
-          (begin
-            (vector-set! G i (make-vector n +inf.0))
-            (t (+ i 1)))))
-    (let t ((p conf))
-      (if (not (null? p))
-          (begin
-            (let ((q (car p)))
-              (vector-set! (vector-ref G (car q)) (cadr q) (caddr q)))
-            (t (cdr p)))))
-    G))
