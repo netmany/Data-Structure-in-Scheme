@@ -40,10 +40,9 @@
             (if (found? p)
                 (if (bounded? p) (set! min p))
                 (let t ((q (branches p)))
-                  (if (and (not (null? q))
-                           (bounded? (car q)))
+                  (if (not (null? q))
                       (begin 
-                        (heap-in h (car q)) 
+                        (if (bounded? (car q)) (heap-in h (car q)))
                         (t (cdr q))))))
             (search (heap-out h)))))))
 
