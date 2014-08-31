@@ -14,8 +14,14 @@
 
 ; ===================================================================
 (define (spath G src dst)
-  (let ((min (cons +inf.0 (list dst)))
-        (h (heap (vector-length G) (lambda (p q) (< (car p) (car q))))))
+  (let* ((min (cons +inf.0 (list dst)))
+         (less? (lambda (p q) (< (car p) (car q))))
+         (h (heap (vector-length G) less?)))
+    (define (heap-find h e)
+      (let t ((i (heap-size h)) (res 0))
+        (if (and (= 0 res) (> i 0))
+            (t (- i 1) (if (= (cadr e) (cadr (heap-ref h i))) i 0))
+            res)))
     (define (found? p) (= (cadr p) (cadr min)))
     (define (branches p)
       (let ((try (vector-ref G (cadr p))))
@@ -29,7 +35,7 @@
                                            (cons j (cdr p)))
                                      brs))
                     (t (- j 1) brs)))))))
-    (define (bounded? p) (< (car p) (car min)))
+    (define (bounded? p) (less? p min))
     (let search ((p (cons 0 (list src))))
       (if (null? p)
           (if (infinite? (car min))
@@ -41,10 +47,19 @@
                 (if (bounded? p) (set! min p))
                 (let t ((q (branches p)))
                   (if (not (null? q))
-                      (begin 
-                        (if (bounded? (car q)) (heap-in h (car q)))
+                      (let ((e (car q)))
+                        (if (bounded? e)
+                            (let ((i (heap-find h e)))  ; merge same path head
+                              (if (found? e) (set! min e))
+                              (if (> i 0)
+                                  (if (less? e (heap-ref h i))
+                                      (begin
+                                        (heap-set! h i e)
+                                        (sift-up (car h) i less?)))
+                                  (heap-in h e))))
                         (t (cdr q))))))
             (search (heap-out h)))))))
+
 
 ; initialize a graph
 ; ===============================================================
@@ -69,7 +84,10 @@
 (define (heap-size h) (vector-ref (car h) 0))
 (define (heap-capacity h) (- (vector-length (car h)) 1))
 (define (heap-empty? h) (= 0 (heap-size h)))
-(define (heap-head h) (vector-ref (car h) 1))
+(define (heap-ref h i) (vector-ref (car h) i))
+(define (heap-set! h i e) (vector-set! (car h) i e))
+(define (heap-head h) (heap-ref h 1))
+
 
 (define (heap-in h e)
   (if (= (heap-size h) (heap-capacity h))
